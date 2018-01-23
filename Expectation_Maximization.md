@@ -17,6 +17,12 @@
 
     <img src="http://latex.codecogs.com/gif.latex?\theta^{(g+1)}=\mathop{\arg\max}_{\theta}\int_{z}{log(P(x,z|\theta)) * P(z|x, \theta^{(g)})}dz" />
 
+    证明：
+
+    <img src="https://latex.codecogs.com/gif.latex?log(P(x|\theta))&space;=&space;log(P(x,z|\theta))&space;-&space;log(P(z|x,\theta))" title="log(P(x|\theta)) = log(P(x,z|\theta)) - log(P(z|x,\theta))" />
+    
+    $$log(P(x|\theta)) = log(P(x,z|\theta)) - log(P(z|x,\theta))$$
+
 
 
 
