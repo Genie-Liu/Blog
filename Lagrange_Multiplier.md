@@ -27,4 +27,10 @@ if we want to maximise $f(x,y) = x + y $ while $x^2 + y^2 = 1$
 对拉格朗日表达式求导，则有：
 $$1+2\lambda x = 0$$  $$1+2\lambda y = 0$$  $$x^2 + y^2 - 1 = 0$$
 
-求解可得$x,y,\lambda$
+求解可得$x,y,\lambda$, 需要区分出来是最大还是最小。
+
+参考资料：
+
+[https://en.wikipedia.org/wiki/Lagrange_multiplier](https://en.wikipedia.org/wiki/Lagrange_multiplier "Lagrange multiplier")
+
+

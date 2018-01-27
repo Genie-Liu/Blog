@@ -31,3 +31,7 @@ $$\alpha_l^{(g+1)} = \frac{1}{N}\sum_{i=1}^{N}P(l|x_i, \theta^{(g)})$$
 $$\mu_l^{(g+1)} = \frac{\sum_{i=1}^{N}x_iP(l|x_i,\theta^{(g)})}{\sum_{i=1}^{N}P(l|x_i,\theta^{(g)})}$$
 
 $$\Sigma_l^{(g+1)} = \frac {\sum_{i=1}^{N} [x_i - \mu_l^{(g+1)}] [x_i - \mu_l^{(g+1)}]^T P(l|x_i,\theta^{(g)})} {\sum_{i=1}^{N} P(l|x_i,\theta^{(g)})}$$
+
+参考资料：
+
+[优酷-徐亦达老师的GMM视频](http://v.youku.com/v_show/id_XMTM1MzMzMjk3Mg==.html?spm=a2hzp.8253869.0.0 "GMM")
