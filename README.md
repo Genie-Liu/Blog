@@ -1,7 +1,8 @@
-# Blog 博客 #
+# My Personal Blog 个人技术博客
 
-Notes about my learning experience. while github can't transmute Latex, please refer to the link below.
+This repository record my technical blogs about Big Data Framework and Machine Learning.
 
-这里记录机器学习经验，由于github不能解析Latex格式，所以这里只是保存博客Markdown格式内容，正常阅读请跳转以下链接:
+大数据以及机器学习相关的技术博客。
 
-http://blog.csdn.net/mophistoliu
+* [CSDN Blogs](http://blog.csdn.net/mophistoliu)
+* [知乎专栏](https://zhuanlan.zhihu.com/c_1118611295213035520)
