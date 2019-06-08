@@ -1,6 +1,6 @@
 # 使用Structured Streaming消费Kafka数据
 
-由于工作需要，在数据收集方面涉及到多个方面的爬虫数据。之前都是爬虫工程师爬取的数据通过文件方式交付给我们做数据处理再导入到数据库里面。为了降低交互过程中的时间成本，提高效率，我们开始引入流处理的方式来进行。
+由于工作需要，在数据收集上牵扯到多个维度的爬虫数据。之前的流程是：爬虫工程师通过文件方式保存爬取的数据，交付给我们做数据清洗处理，再导入到数据库。为了降低交互过程中的时间成本，提高效率，我们开始引入流处理的方式。
 
 之前的模式：
 
@@ -12,11 +12,11 @@
 <!-- ![](./materials/pipeline_after.png) -->
 <div> <img src="./materials/pipeline_after.png" width="500"> </div>
 
-## 通过kafka-python包作为数据生产者
+## 通过kafka-python包的生产者写入数据
 
-首先，需要对爬虫脚本进行改造。原先的写入文件代码部分可以不需要改动，只要对爬取到的数据写入kafka即可(kafka的相关配置可见[上一篇文章]())。
+首先，需要对爬虫脚本进行改造。原先的写入文件代码部分可以不需要改动，只要对爬取到的数据增加写入kafka操作即可(kafka的相关配置可见[上一篇文章](./kafka_fast_tutorial.md))。
 
-爬虫数据可分为两种，一种是定期的全量数据更新，另一种是增量数据。对于全量数据更新，我们可以在写入kafka中增加爬虫脚本运行的时间戳, 这样通过时间戳来获取到最新一次的爬虫数据。
+爬虫数据可分为两种，一种是定期的全量数据更新，另一种是增量数据。对于全量数据更新，我们可以在写入kafka中增加时间戳来区分版本。
 
 通过kafka-python包，可以很方便的写入数据到kafka中：
 
@@ -39,17 +39,16 @@ for i in range(100):
 
 ## Structured Streaming消费Kafka数据
 
-Spark提供了很好的批流统一的API，而最近刚推出的delta也是如此。这样，流处理也能受益于针对Dataframe的优化。
+Spark提供了很好的批流统一API，而最近刚推出的delta也是如此。这样，流处理也能受益于针对Dataframe的优化。
 
-为了使用kafka源，需要加载相应的jar包，所以在启动pyspark或者是通过spark-submit提交时，需要加入相关依赖：
+为了使用kafka数据源，需要加载相应的jar包，所以在启动pyspark或者是通过spark-submit提交时，需要加入相关依赖：
 
 ```bash
 $ pyspark --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3
-or 
 $ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3
 ```
 
-使用maven做项目管理时，可以把kafka加入到依赖中
+使用maven做项目管理时，可以把spark-sql-kafka加入到依赖中
 
 ```html
 <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10 -->
@@ -61,7 +60,7 @@ $ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.4.3
 </dependency>
 ```
 
-使用readStream来读入流，指定format为kafka。需要指定kafka的broker以及绑定的主题（可以绑定多个主题    ）。还可以指定offset的位置(有latest, earliest以及具体对每一个topic的每一个分区进行指定)。
+使用readStream来读入流，指定format为kafka，kafka的broker配置以及绑定的主题（可以绑定多个主题）。还可以指定offset的位置(有latest, earliest以及具体对每一个topic的每一个分区进行指定)。
 
 ```python
 df = spark \
@@ -73,7 +72,7 @@ df = spark \
   .load()
 ```
 
-这样子，获得到的dataframe就可以使用相关的操作。得到清洗后的数据就可以写入到sink。spark常用的文件格式为parquet，有关parquet的介绍可以参考后面的链接资料。
+这样子，获得到的dataframe就可以使用DataFrame相关的操作。得到清洗后的数据就可以写入到sink。spark常用的文件格式为parquet，有关parquet的介绍可以参考后面的链接资料。
 
 ```python
 # 写入到parquet文件
@@ -83,13 +82,15 @@ df.writeStream.format("parquet"). \
     start()
 ```
 
-大家可能会困惑Structured Streaming是怎么对kafka的offset进行管理。我们看到读入流的时候要设置offset，那么如果程序中断之后再重启会是怎样呢？这里我们注意到流写入到sink的时候，必须要设置一个checkpointLocaion，Structured Streaming就是在这个目录下来管理offset。如果程序中断之后再重启，虽然在读入流的时候设置的是某一个offset，但是在写入流的时候，如果已经存在了checkpointLocation，那么流会从之前中断的地方继续处理，即读入流对offset的设置只是针对checkpointLocation第一次初始化的时候有效。
+大家可能会困惑Structured Streaming是怎么对kafka的offset进行管理。我们看到读入流的时候要设置offset，那么如果程序中断之后再重启会是怎样呢？
+
+这里，我们注意到流写入到sink的时候，必须要设置一个checkpointLocaion，Structured Streaming就是在这个目录下来管理offset。如果程序中断之后再重启，虽然在读入流的时候设置的是某一个offset，但是在写入流的时候，如果已经存在了checkpointLocation，那么流会从之前中断的地方继续处理，即读入流对offset的设置只是针对checkpointLocation第一次初始化的时候有效。
 
 在实际使用Structured Streaming的时候，我们也遇到了一些问题：
 
 * 对于长期运行的Structured Streaming程序，如何做到动态使用资源
 
-    首先先评估是否有必要使用长期运行的streaming程序，如果对数据实时性要求没那么高，可以考虑做定期的流任务。如果需要长期运行，可以考虑spark的动态分配资源选项：
+    首先先评估是否有必要使用长期运行的streaming程序，如果对数据实时性要求没那么高，可以考虑做定期的流任务。如果需要长期运行，可以考虑spark的动态分配资源选项（听闻bug比较多）：
 
     ```bash
     --conf spark.dynamicAllocation.enabled=true \
@@ -98,12 +99,12 @@ df.writeStream.format("parquet"). \
     --conf spark.dynamicAllocation.maxExecutors=5
     ```
 
-* 使用Structured Streaming写入parquet文件，会导致产生很多小的parquet文件，这样子对HDFS的namenode压力比较大
+* 使用Structured Streaming写入parquet文件时，会导致产生很多小的parquet文件，这样子对HDFS的namenode压力比较大
 
     可以参考[这篇文章](https://evoeftimov.wordpress.com/2017/08/29/spark-streaming-parquet-and-too-many-small-output-files/), 主要的两个解决方案是：
 
-    1. 在Structured Streaming中通过coalesce来减少分区，从而降低写入的parquet文件
-    2. 通过运行一个批处理程序来对多个parquet文件重写为指定数量的parquet文件
+    1. 在Structured Streaming中通过coalesce来减少分区，从而减少写入的parquet文件数量
+    2. 通过运行一个批处理程序来读入多个小parquet文件，通过repartition为指定数量后再写入parquet文件
 
 参考资料:
 * [Databricks Structured Streaming案例](https://databricks.com/blog/2017/04/26/processing-data-in-apache-kafka-with-structured-streaming-in-apache-spark-2-2.html)
