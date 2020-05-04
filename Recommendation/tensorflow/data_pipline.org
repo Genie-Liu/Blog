@@ -1,0 +1,9 @@
+* 背景
+  
+之所以有这篇博文，最早起源于对FM模型的尝试。[[https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf][FM]]模型在除了一阶特征之外，对离散化特征进行embedding,使用embedding的内积来作为特征之间的高阶相关性。具体细节可以参考[[http://tech.yuceyi.com/article/1585745474194][晨晨学长这篇博文]].
+
+理解完论文之后，就是后面的工程化工作了。秉着不重复造轮子的理念,我们快速找到了论文团队的实现： [[https://github.com/srendle/libfm][libfm]], 一个使用C++实现的库（[[http://d0evi1.com/libfm][这篇文档帮助我们快速使用libfm]]）。后来发现效率不够高（我们的train数据集有60+G），所以我们又找了另外一个实现库：[[https://github.com/aksnzhy/xlearn][xlearn]], 相对来说效率提升了一些。但是
+
+
+#+title: tensorflow之dataset
+#+options: toc:nil
