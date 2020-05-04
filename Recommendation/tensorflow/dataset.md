@@ -148,8 +148,8 @@ parsed_dataset = dataset.map(_parse_function)
 1. map可以通过num_parallel_calls参数实现并行化，提高数据转化效率
 2. prefetch能够实现数据加载和模型训练并行效果，充分利用cpu和gpu资源
 
-    <p><img src="./no_pipeling.png" alt="no_pipeling" width="400"/></p>
-    <p><img src="./pipeling.png" alt="pipeling" width="400"/></p>
+    <p><img src="./src/no_pipeling.png" alt="no_pipeling" width="400"/></p>
+    <p><img src="./src/pipeling.png" alt="pipeling" width="400"/></p>
 
 3. batch, shuffle, repeat这三者的顺序不同，结果也会不一样。具体可以运行下面代码并调整三者顺序来验证.
 
@@ -163,13 +163,13 @@ parsed_dataset = dataset.map(_parse_function)
     ```
 
     先batch再repeat
-    <p><img src="./batch_repeat.png" alt="batch_repeat" width="400"/></p>
+    <p><img src="./src/batch_repeat.png" alt="batch_repeat" width="400"/></p>
 
     先repeat再batch
-    <p><img src="./repeat_batch.png" alt="repeat_batch" width="400"/></p>
+    <p><img src="./src/repeat_batch.png" alt="repeat_batch" width="400"/></p>
 
     shuffle机制，若先做batch再shuffle，则shuffle的是各个batch，而不是batch里的样本。
-    <p><img src="./shuffle_mechanism.png" alt="shuffle-mechanism" width="400"/></p>
+    <p><img src="./src/shuffle_mechanism.png" alt="shuffle-mechanism" width="400"/></p>
 
 
 参考资料
