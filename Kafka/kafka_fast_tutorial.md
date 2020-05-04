@@ -38,14 +38,14 @@
 
     Kafka是通过zookeeper来对broker(即消息具体负责人)进行管理， 需启动zookeeper集群。若已有zookeeper集群，可直接使用。同时Kafka源码包里也自带zookeeper
     ```
-    # 加--daemon选项可实现后台运行守护进程 
+    # 加-daemon选项可实现后台运行守护进程 
     > bin/zookeeper-server-start.sh config/zookeeper.properties
     ```
 
     broker服务是真正处理消息的进程，他包括响应生产者和消费者请求，同时也负责本broker内的分区副本同步等工作。
 
     ```
-    # 同样，加--daemon选项可实现后台运行守护进程 
+    # 同样，加-daemon选项可实现后台运行守护进程 
     bin/kafka-server-start.sh config/server.properties
     ```
 
