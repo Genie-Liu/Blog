@@ -41,8 +41,7 @@ index = [1,2,3]
 value = [0.5, 0.5, 0.5]
 with tf.io.TFRecordWriter(out_file) as writer:
     feature = {
-        'label':
-            tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
+        'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
         'index': tf.train.Feature(int64_list=tf.train.Int64List(value=index)),
         'value': tf.train.Feature(float_list=tf.train.FloatList(value=value)),
     }
