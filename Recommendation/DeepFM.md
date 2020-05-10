@@ -33,7 +33,7 @@ DeepFM论文中做了跟很多其他模型的对比，个人觉得比较有意�
 
 ### FM Part
 
-DeepFM的低阶部分由FM组成。论文的FM部分看起来像是个一层的神经网络，实际上$y_{FM}$还是用的FM传统的计算trick公式得到的.(注意到这层网络的名字叫FM Layer)
+DeepFM的低阶部分由FM组成。论文的FM部分看起来像是个一层的神经网络，实际上$y_{FM}$还是用的FM传统的计算trick公式得到的.(注意这层网络的名字叫FM Layer)
 
 <p><img src="./src/deepfm_fm_component.png" width=400></p>
 
@@ -41,7 +41,7 @@ DeepFM的低阶部分由FM组成。论文的FM部分看起来像是个一层的�
 
 ### Deep Part
 
-DeepFM的高阶部分由MLP组成。假如我们有n个特征，隐变量为k维，则deep部分的输入即是把这n个k维的隐变量拼一起。$[V_1, V_2, ... V_n]$, 其中$V_i = [v_{i1}, v_{i2}, ... v_{ik}]$
+DeepFM的高阶部分由MLP组成。假如我们有n个特征(FM中的Field概念)，隐变量为k维，则deep部分的输入即是把这n个k维的隐变量拼一起。$[V_1, V_2, ... V_n]$, 其中$V_i = [v_{i1}, v_{i2}, ... v_{ik}]$
 
 <p><img src="./src/deepfm_deep_component.png" width=400></p>
 
@@ -49,7 +49,11 @@ DeepFM的高阶部分由MLP组成。假如我们有n个特征，隐变量为k维
 
 分别得到$y_{FM}$和$y_{DNN}$后，最终模型的输出为: $\hat{y} = sigmoid(y_{FM} + y_{DNN})$. 搭建模型的时候需要注意，k维的隐变量是FM和Deep一起共享的。
 
-模型实现： [search-deeplearning/models/DeepFMEstimator](https://github.com/Genie-Liu/search-deeplearning/blob/master/search_deeplearning/models/DeepFMEstimator.py)
+模型实现：[search-deeplearning/models/DeepFMEstimator](https://github.com/Genie-Liu/search-deeplearning/blob/master/search_deeplearning/models/DeepFMEstimator.py)
+
+参考了[ChenglongChen/tensorflow-DeepFM](https://github.com/ChenglongChen/tensorflow-DeepFM)的实现，其中FM和MLP部分输出的各自是一个tensor，通过concate一起在喂入最后一层网络。
+
+即： $\hat{y} = sigmoid(W^{(final)}([y_{FM}, y_{DNN}]) + b^{(final)})$
 
 参考资料：
 1. [Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
