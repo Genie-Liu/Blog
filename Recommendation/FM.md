@@ -12,7 +12,7 @@ FM把每个稀疏特征作为一个field，每个field可能有多种取值。
 
 <p><img src="./src/fm_field.png" width=600></p>
 
-每个field的具体取值会对一个一个权重$w_i$以及一个隐变量$[v_{i1}, v_{i2}...v_{ik}]$
+每个field的具体取值会对一个一个权重<img src="https://latex.codecogs.com/gif.latex?w_i" title="w_i" />以及一个隐变量<img src="https://latex.codecogs.com/gif.latex?[v_{i1},&space;v_{i2}...v_{ik}]" title="[v_{i1}, v_{i2}...v_{ik}]" />
 
 <p><img src="./src/fm_vector.png" width=500></p>
 
