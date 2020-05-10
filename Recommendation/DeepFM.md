@@ -4,27 +4,16 @@
 
 但是它有个麻烦的地方，那就是wide部分需要较多的特征工程工作。这一点对于人员紧张的小厂来说还是不太方便。而FM具有自动学习交叉特征的能力，同时其使用的隐变量也可以跟Deep部分一起共享。所以也就有了DeepFM这个模型，用FM来代替wide部分。
 
-## FM简单介绍
+## FM 
 
-FM模型把稀疏特征映射为K维的隐变量，并且通过隐变量之间的点积来作为两个特征交叉的权重值.当然FM也可以做高阶的特征交叉，但是绝大部分时候我们还是只用二阶部分，更高阶的部分还是交给深度网络吧。
-
-整体来看FM解决了以下问题：
-
-1. 降低交叉特征所需要训练的权重数量。使用特征隐变量内积作为两个交叉特征的权重，隐变量的总参数为$K*N$
-
-2. 降低交叉特征的计算复杂度, 从原来的$O(kn^2)$降低为$O(kn)$. 当然对于稀疏场景来说N不算太大. 这一操作使得在训练时候，SGD的运算复杂度也为O(K*N).
-
-   <p><img src="./src/fm_formular_reduce_complexity.png" weidth=200></p>
-   <p><img src="./src/fm_sgd.png" weidth=200></p>
-   
-3. 解决从未出现过的交叉特征问题。论文中举例了电影推荐的场景，很多时候未出现的交叉特征并不代表他们没有相关性。
+详细介绍见[FM简介](./FM.md)
 
 对比FM和Wide&Deep的Wide部分：
 
 优点：
 
 * 无需特征工程，这一点对于搭建端到端模型来说比较重要。
-* 不要求交叉特征共同在样本出现过，这在稀疏场景下比较重要。
+* 不要求交叉特征共同在样本出现过，使得在稀疏场景下也能学习到交叉特征
 
 缺点：
 
@@ -33,12 +22,35 @@ FM模型把稀疏特征映射为K维的隐变量，并且通过隐变量之间�
 
 ## DeepFM
 
-尽管FM做了特征交叉，但是整体而言还是属于比较低阶的特征，模型学习到的也是特征共现性，即记忆特征。要想提高模型的泛化能力，还是需要加入Deep部分。
+尽管FM做了特征交叉，但是整体而言还是属于比较低阶的特征，模型学习到的主要还是特征共现性，即记忆特征。要想提高模型的泛化能力，还是需要加入Deep部分。
 
+DeepFM论文中做了跟很多其他模型的对比，个人觉得比较有意义的就是和FM、wide&deep这两者的对比(其他模型感觉是拿来凑数的)。整篇文章凸显三个优势：
 
+1. 端到端模型训练
+2. 同时捕捉到高阶和低阶特征
+3. 无需特征工程和预训练
 
+<p><img src="./src/deepfm_advance.png" width=400></p>
 
-尽管FM
+### FM Part
+
+DeepFM的低阶部分由FM组成。论文的FM部分看起来像是个一层的神经网络，实际上$y_{FM}$还是用的FM传统的计算trick公式得到的.(注意到这层网络的名字叫FM Layer)
+
+<p><img src="./src/deepfm_fm_component.png" width=400></p>
+
+<p><img src="./src/fm_formular.png" width=400></p>
+
+### Deep Part
+
+DeepFM的高阶部分由MLP组成。假如我们有n个特征，隐变量为k维，则deep部分的输入即是把这n个k维的隐变量拼一起。$[V_1, V_2, ... V_n]$, 其中$V_i = [v_{i1}, v_{i2}, ... v_{ik}]$
+
+<p><img src="./src/deepfm_deep_component.png" width=400></p>
+
+### Combine
+
+分别得到$y_{FM}$和$y_{DNN}$后，最终模型的输出为: $\hat{y} = sigmoid(y_{FM} + y_{DNN})$. 搭建模型的时候需要注意，k维的隐变量是FM和Deep一起共享的。
+
+模型实现： [search-deeplearning/models/DeepFMEstimator](https://github.com/Genie-Liu/search-deeplearning/blob/master/search_deeplearning/models/DeepFMEstimator.py)
 
 参考资料：
 1. [Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
