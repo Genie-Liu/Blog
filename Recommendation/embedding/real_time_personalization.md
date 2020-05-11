@@ -19,18 +19,18 @@
     * 过滤停留时间较短的房源
     * 两次点击间隔超过30min即归为不同点击Session
 
-    ![](./sample_preprocess.png)
+    ![](./src/sample_preprocess.png)
 
 1. 使用skip-gram训练Embedding
 
     在多数的场景下，我们更经常能看到skip-gram模型，而不是cbow。在[论文]()中,我们看到两者的差别，skip-gram相较于cbow更能学习到语义上的信息。在我们非文本的场景里，语义对我们来说更为重要。
 
-    ![skip-gram](./skip-gram-vs-cbow.png)
+    ![skip-gram](./src/skip-gram-vs-cbow.png)
 
 2. 下单商品作为全局上下文（Global Context）
 
     下单的商品在电商场景中是比较特殊的，但skip-gram是按照窗口大小来进行构造样本集，如果下单商品是最后点击的商品，那么该下单商品无法和前面的点击商品形成上下文，所以airbnb团队对原生的word2vec进行了修改，针对有下单的点击序，构造一个global context，使得点击商品的Embedding空间往最终下单商品靠近。
-    ![](./global_context.png)
+    ![](./src/global_context.png)
 
 3. Embedding验证
 
@@ -40,9 +40,9 @@
     1. 利用了房源的地理位置做直观的判断。首先对同一区域内（加州）的房源Embedding进行聚类，不同类别涂上不同颜色，然后在地图上展示。
     3. 构建小工具，通过单个房源获取余弦距离Top N小的其他房源，判断Embedding是否学到房屋风格等信息。
     2. 利用房屋的类型、价格等信息，对房源进行了分类，然后计算不同类别之间的Embedding的余弦距离。
-    ![](./geography.png)
-    ![](./listing_style.png)
-    ![](./cosine_similarity.png)
+    ![](./src/geography.png)
+    ![](./src/listing_style.png)
+    ![](./src/cosine_similarity.png)
 
 这里我们过了一下listing Embedding部分的内容，实际上该论文还有做关于User Type Embedding和Listing Type Embedding的内容，这块后续尝试之后再跟大家分享。
 
@@ -64,7 +64,7 @@
     1. 新增样本数据，导致在统计词频时改变了词频的分布。
     2. 由于训练过程中会进行负采样，单独构造的新样本，有可能负采样到同一窗口的其他商品（如下图，在训练L1 Lb时，有可能负采样到L1 L2）
 
-    ![](./sample_global_context.png)
+    ![](./src/sample_global_context.png)
 
 3. 训练
 
@@ -76,12 +76,12 @@
 
     * 不同类目下Embedding的余弦相似度。相对于论文的cosine similarity，我们的结果偏低，但是类目之间的差异相对来说还是比较明显的。
 
-    ![](./root_category_similarity.png)
-    ![](./leaf_category_similarity.png)
+    ![](./src/root_category_similarity.png)
+    ![](./src/leaf_category_similarity.png)
 
     * 聚类后，同cluster下的类目信息熵。由于我们没有地理位置的信息，无法像论文那样给出直观的聚类结果评价。在这里我们聚类后，对同类别的商品类目进行分析，通过类目分布的信息熵来判断聚类效果。可以看到我们的类目信息熵普遍在1.5以下， 而原来所有商品的类目分布熵为2.6
 
-    ![聚类后信息熵](./category_entropy.png)
+    ![聚类后信息熵](./src/category_entropy.png)
 
 虽然我们通过以上的流程训练得到了商品Embedding，但如何使用把Embedding用在搜索场景还需要继续探讨。初步想法是用faiss来做搜索的多路召回。
 

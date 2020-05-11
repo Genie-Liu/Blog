@@ -53,7 +53,7 @@ DeepFM的高阶部分由MLP组成。假如我们有n个特征(FM中的Field概�
 
 参考了[ChenglongChen/tensorflow-DeepFM](https://github.com/ChenglongChen/tensorflow-DeepFM)的实现，其中FM和MLP部分输出的各自是一个tensor，通过concate一起在喂入最后一层网络。
 
-即： $\hat{y} = sigmoid(W^{(final)}([y_{FM}, y_{DNN}]) + b^{(final)})$
+即：$\hat{y} = sigmoid(W^{(final)}([y_{FM}, y_{DNN}]) + b^{(final)})$
 
 参考资料：
 1. [Factorization Machines](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
