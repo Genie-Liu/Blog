@@ -43,7 +43,7 @@
     3. 构建小工具，通过单个房源获取余弦距离Top N小的其他房源，判断Embedding是否学到房屋风格等信息。
     2. 利用房屋的类型、价格等信息，对房源进行了分类，然后计算不同类别之间的Embedding的余弦距离。
 
-    <p><img src="./src/geography.png" height=400> <img src="./src/listing_style.png" height=400></p>
+    <p><img src="./src/geography.png" height=300> <img src="./src/listing_style.png" height=300></p>
     <p><img src="./src/cosine_similarity.png" width=400></p>
 
 这里我们过了一下listing Embedding部分的内容，实际上该论文还有做关于User Type Embedding和Listing Type Embedding的内容，这块后续尝试之后再跟大家分享。
@@ -57,7 +57,7 @@
 
 2. global context的实现
 
-    作为该论文的亮点，global context的概念还是挺新鲜的。不过要实现这块功能，我们需要对源码进行修改。但是word2vec的源码是C++，如果想要修改的话不太容易，至少要先把代码review一遍。考虑到时间投入成本，对此，我这边做了一个小trick，通过自己构造包含global contex的上下文的新样本来实现。具体就是保持原样本不动的情况下，拼接下单商品Lb和其他点击商品L1-Ln.
+    作为该论文的亮点，global context的概念还是挺新鲜的。不过要实现这块功能，我们需要对源码进行修改。但是word2vec的源码是C++，如果想要修改的话不太容易，至少要先把代码review一遍。考虑到时间投入成本，对此，我这边做了一个小trick(建议有时间的同学们最好还是能过一遍源码并进行改造[word2vec](https://github.com/tmikolov/word2vec))，通过自己构造包含global contex的上下文的新样本来实现。具体就是保持原样本不动的情况下，拼接下单商品Lb和其他点击商品L1-Ln.
 
     当然这种构造虽然不用改动代码，但是为引入两个问题：
 
@@ -75,12 +75,13 @@
 3. Embedding验证
 
     * 不同类目下Embedding的余弦相似度。相对于论文的cosine similarity，我们的结果偏低，但是类目之间的差异相对来说还是比较明显的。
-    <p><img src="./src/root_category_similarity.png" height=200> <img src="./src/leaf_category_similarity.png" height=200></p>
+    
+    <p><img src="./src/root_category_similarity.png" height=150> <img src="./src/leaf_category_similarity.png" height=150></p>
     
 
     * 聚类后，同cluster下的类目信息熵。由于我们没有地理位置的信息，无法像论文那样给出直观的聚类结果评价。在这里我们聚类后，对同类别的商品类目进行分析，通过类目分布的信息熵来判断聚类效果。可以看到我们的类目信息熵普遍在1.5以下， 而原来所有商品的类目分布熵为2.6
 
-    <p><img src="./src/category_entropy.png" width=800></p>
+    <p><img src="./src/category_entropy.png" width=600></p>
 
 虽然我们通过以上的流程训练得到了商品Embedding，但如何使用把Embedding用在搜索场景还需要继续探讨。初步想法是用faiss来做搜索的多路召回。
 
@@ -88,5 +89,5 @@
 参考资料：
 1. [Efficient Estimation of Word Representations in Vector Space](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/41224.pdf)
 2. [Real-time Personalization using Embeddings for Search Ranking at Airbnb](https://dl.acm.org/doi/abs/10.1145/3219819.3219885)
-
+3. [Listing Embeddings in Search Ranking](https://medium.com/airbnb-engineering/listing-embeddings-for-similar-listing-recommendations-and-real-time-personalization-in-search-601172f7603e)
 
